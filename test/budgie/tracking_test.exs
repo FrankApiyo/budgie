@@ -1,5 +1,6 @@
 defmodule Budgie.TrackingTest do
   use Budgie.DataCase
+  import Budgie.TrackingFixtures
 
   alias Budgie.Tracking
 
@@ -65,6 +66,22 @@ defmodule Budgie.TrackingTest do
                errors_on(changeset)
 
       assert Keyword.keys(changeset.errors) == [:end_date]
+    end
+
+    test "list_budget/0 returns all budgets" do
+      budget = budget_fixture()
+      assert Tracking.list_budgets() == [budget]
+    end
+
+    test "get_budget/1 returns the budget with given id" do
+      budget = budget_fixture()
+
+      assert Tracking.get_budget(budget.id) == budget
+    end
+
+    test "get_budget/1 returns nil when budget does not exist" do
+      _unrelated_budget = budget_fixture()
+      assert is_nil(Tracking.get_budget("10fe1ad8-6133-5d7d-b5c9-da29581bb923"))
     end
   end
 end
