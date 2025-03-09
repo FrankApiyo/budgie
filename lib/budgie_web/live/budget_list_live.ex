@@ -3,7 +3,12 @@ defmodule BudgieWeb.BudgetListLive do
   alias Budgie.Tracking
 
   def mount(_params, _session, socket) do
-    budgets = Tracking.list_budgets() |> Budgie.Repo.preload(:creator)
+    budgets =
+      Tracking.list_budgets(
+        user: socket.assigns.current_user,
+        preload: :creator
+      )
+
     socket = assign(socket, budgets: budgets)
     {:ok, socket}
   end

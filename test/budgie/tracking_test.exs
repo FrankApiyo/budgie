@@ -1,6 +1,7 @@
 defmodule Budgie.TrackingTest do
   use Budgie.DataCase
   import Budgie.TrackingFixtures
+  import Budgie.AccountsFixtures
 
   alias Budgie.Tracking
 
@@ -57,9 +58,12 @@ defmodule Budgie.TrackingTest do
       assert Keyword.keys(changeset.errors) == [:end_date]
     end
 
-    test "list_budget/0 returns all budgets" do
-      budget = budget_fixture()
-      assert Tracking.list_budgets() == [budget]
+    test "list_budget/0 returns all budgets in a scoped manner" do
+      creator = user_fixture()
+      budget = budget_fixture(%{creator_id: creator.id})
+      other_budget = budget_fixture()
+      assert Tracking.list_budgets() == [budget, other_budget]
+      assert Tracking.list_budgets(user: creator) == [budget]
     end
 
     test "get_budget/1 returns the budget with given id" do
