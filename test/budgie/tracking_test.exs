@@ -10,13 +10,7 @@ defmodule Budgie.TrackingTest do
     test "create_budget/2 with valid data creates budget" do
       user = Budgie.AccountsFixtures.user_fixture()
 
-      valid_attrs = %{
-        name: "some name",
-        description: "some descriptions",
-        start_date: ~D[2025-01-01],
-        end_date: ~D[2025-01-03],
-        creator_id: user.id
-      }
+      valid_attrs = valid_budget_attrs(%{creator_id: user.id})
 
       assert {:ok, %Budget{} = budget} = Tracking.create_budget(valid_attrs)
       assert budget.name == "some name"
@@ -29,12 +23,7 @@ defmodule Budgie.TrackingTest do
     test "create_budget/2 requires name" do
       user = Budgie.AccountsFixtures.user_fixture()
 
-      attrs_without_name = %{
-        description: "some descriptions",
-        start_date: ~D[2025-01-01],
-        end_date: ~D[2025-01-03],
-        creator_id: user.id
-      }
+      attrs_without_name = valid_budget_attrs(%{user_id: user.id}) |> Map.delete(:name)
 
       assert {:error, %Ecto.Changeset{} = changeset} = Tracking.create_budget(attrs_without_name)
 
