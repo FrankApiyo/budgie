@@ -10,7 +10,10 @@ defmodule BudgieWeb.BudgetShowLive do
       })
 
     if budget do
-      {:ok, assign(socket, budget: budget)}
+      transactions =
+        Tracking.list_transactions(budget)
+
+      {:ok, assign(socket, budget: budget, transactions: transactions)}
     else
       socket =
         socket
@@ -32,7 +35,35 @@ defmodule BudgieWeb.BudgetShowLive do
 
   def render(assigns) do
     ~H"""
-    {@budget.name} by {@budget.creator.name}
+    <.modal
+      :if={@live_action == :new_transaction}
+      id="create-transaction-modal"
+      on_cancel={JS.navigate(~p"/budgets/#{@budget}", replace: true)}
+      show
+    >
+      <.live_component
+        module={BudgieWeb.CreateTransactionDialog}
+        id="create-transaction"
+        budget={@budget}
+      />
+    </.modal>
+
+    <div class="flex justify-between items-center">
+      <div>{@budget.name} by {@budget.creator.name}</div>
+      <.link
+        navigate={~p"/budgets/#{@budget}/new-transaction"}
+        class="bg-gray-100  text-gray-700 hover:bg-gray-200 hover:text-gray-800 px-3 py-2 rounded-lg flex items-center"
+      >
+        <.icon name="hero-plus" class="h-4 w-4" />
+        <span>New Transaction</span>
+      </.link>
+    </div>
+
+    <.table id="transactions" rows={@transactions}>
+      <:col :let={transaction} label="Description">{transaction.description}</:col>
+      <:col :let={transaction} label="Date">{transaction.effective_date}</:col>
+      <:col :let={transaction} label="Amount">{transaction.amount}</:col>
+    </.table>
     """
   end
 end

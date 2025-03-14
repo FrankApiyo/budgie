@@ -6,7 +6,7 @@ defmodule Budgie.Repo.Migrations.CreateBudgetTransactions do
       add :id, :binary_id, primary_key: true
       add :effective_date, :date
       add :type, :string
-      add :ammount, :decimal
+      add :amount, :decimal
       add :description, :text
       add :budget_id, references(:budgets, on_delete: :delete_all, type: :binary_id)
 
